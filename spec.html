@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZjazdTutaj.pl — Technical Specification</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1a7a3c;--green-dark:#0f5229;--green-mid:#2d9e55;
+  --green-accent:#4dbb72;--green-light:#e8f5ee;
+  --white:#fff;--off:#f7faf8;--gray:#e8ede9;--gray-mid:#d0d8d2;
+  --text:#0f1f15;--text-mid:#4a5550;--text-muted:#8a9990;
+}
+body{font-family:'Inter',sans-serif;background:var(--off);color:var(--text);line-height:1.7}
+
+/* NAV */
+nav{background:var(--green-dark);padding:0 5%;display:flex;align-items:center;height:60px;gap:16px;position:sticky;top:0;z-index:100}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-sign{width:40px;height:28px;background:var(--green);border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.logo-sign::before{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:5px;height:6px;background:var(--green)}
+.logo-arrow{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:8px solid white;margin-right:1px}
+.logo-label{color:white;font-size:6px;font-weight:700;letter-spacing:0.5px;margin-top:2px}
+.nav-name{font-size:16px;font-weight:600;color:white}
+.nav-name span{color:var(--green-accent)}
+.nav-links{margin-left:auto;display:flex;gap:4px}
+.nav-link{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.7);text-decoration:none;transition:all .15s}
+.nav-link:hover{background:rgba(255,255,255,0.1);color:white}
+.nav-link.active{background:rgba(255,255,255,0.15);color:white}
+
+/* LAYOUT */
+.page-wrap{display:flex;max-width:1200px;margin:0 auto;padding:40px 5%}
+aside{width:220px;flex-shrink:0;margin-right:40px}
+.toc{position:sticky;top:80px;background:var(--white);border:1px solid var(--gray);border-radius:12px;padding:20px;font-size:13px}
+.toc-title{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px}
+.toc a{display:block;color:var(--text-mid);text-decoration:none;padding:5px 8px;border-radius:5px;margin-bottom:2px;transition:all .15s;border-left:2px solid transparent}
+.toc a:hover{background:var(--off);color:var(--green)}
+.toc a.active{background:var(--green-light);color:var(--green-dark);border-left-color:var(--green);font-weight:500}
+main{flex:1;min-width:0}
+
+/* SECTIONS */
+.spec-section{background:var(--white);border:1px solid var(--gray);border-radius:14px;padding:36px;margin-bottom:16px}
+.sec-num{font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+h1{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px;margin-bottom:16px;padding-bottom:14px;border-bottom:2px solid var(--green-light)}
+h2{font-size:18px;font-weight:600;color:var(--green-dark);margin:28px 0 10px}
+h3{font-size:15px;font-weight:600;color:var(--text);margin:20px 0 8px}
+p{font-size:14px;color:var(--text-mid);margin-bottom:12px;line-height:1.7}
+ul{margin:8px 0 16px 0;display:flex;flex-direction:column;gap:6px}
+ul li{font-size:14px;color:var(--text-mid);padding-left:20px;position:relative;line-height:1.6}
+ul li::before{content:'›';position:absolute;left:4px;color:var(--green);font-weight:600}
+strong{color:var(--text);font-weight:600}
+
+/* TABLE */
+.spec-table{width:100%;border-collapse:collapse;margin:12px 0 20px;font-size:13px}
+.spec-table th{background:var(--green);color:white;padding:10px 14px;text-align:left;font-weight:600;font-size:12px}
+.spec-table th:first-child{border-radius:6px 0 0 0}
+.spec-table th:last-child{border-radius:0 6px 0 0}
+.spec-table td{padding:10px 14px;border-bottom:1px solid var(--gray);color:var(--text-mid);vertical-align:top}
+.spec-table tr:nth-child(even) td{background:var(--off)}
+.spec-table tr:last-child td{border-bottom:none}
+.spec-table td:first-child{font-weight:500;color:var(--text);white-space:nowrap}
+
+/* CALLOUT */
+.callout{background:var(--green-light);border:1px solid rgba(26,122,60,0.2);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0}
+.callout p{color:var(--green-dark);margin:0;font-size:13px}
+.callout strong{color:var(--green-dark)}
+
+/* PHASE BADGE */
+.phase{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle}
+.p1{background:#e8f5ee;color:#0f5229}
+.p2{background:#faeeda;color:#633806}
+.p3{background:#e6f1fb;color:#0c447c}
+
+/* FOOTER */
+footer{background:var(--green-dark);padding:24px 5%;text-align:center}
+footer p{font-size:12px;color:rgba(255,255,255,0.4)}
+
+@media(max-width:900px){aside{display:none}.page-wrap{padding:24px 5%}}
+@media(max-width:600px){.nav-links{display:none}.spec-section{padding:24px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="logo-sign">
+      <div style="display:flex;align-items:center"><div class="logo-arrow"></div><div style="width:2px;height:11px;background:white;border-radius:1px"></div></div>
+      <div class="logo-label">ZJAZD</div>
+    </div>
+    <span class="nav-name">ZjazdTutaj<span>.pl</span></span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Overview</a>
+    <a class="nav-link active" href="spec.html">Tech Spec</a>
+    <a class="nav-link" href="mindmap.html">Feature Map</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <aside>
+    <div class="toc">
+      <div class="toc-title">Contents</div>
+      <a href="#s1">1. Executive summary</a>
+      <a href="#s2">2. Product overview</a>
+      <a href="#s3">3. Architecture</a>
+      <a href="#s4">4. Public website</a>
+      <a href="#s5">5. Seller account</a>
+      <a href="#s6">6. Dealer account</a>
+      <a href="#s7">7. Auction engine</a>
+      <a href="#s8">8. Backoffice</a>
+      <a href="#s9">9. Notifications</a>
+      <a href="#s10">10. APIs</a>
+      <a href="#s11">11. Legal</a>
+      <a href="#s12">12. Delivery</a>
+      <a href="#s13">13. Non-functional</a>
+      <a href="#s14">14. Glossary</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <div class="spec-section" id="s1">
+      <div class="sec-num">Section 1</div>
+      <h1>Executive Summary</h1>
+      <p>ZjazdTutaj.pl is a Polish online car-selling marketplace that connects private vehicle sellers directly with a network of verified franchise and independent dealers. Sellers receive competitive, data-driven offers without visiting a forecourt. Dealers gain access to a curated, high-quality supply of pre-owned vehicles.</p>
+      <p>This document defines the complete product scope, feature set, technical requirements, and recommended third-party integrations required for a development partner to design, build, test, and launch the platform. It covers five core product areas:</p>
+      <ul>
+        <li>Public-facing marketing website</li>
+        <li>Seller account portal (the seller journey from valuation to sale)</li>
+        <li>Dealer account portal (the buyer journey from browsing to bidding and acquisition)</li>
+        <li>Dealer auction engine (sealed-bid, time-limited auction mechanics)</li>
+        <li>Internal backoffice (admin and operations tooling)</li>
+      </ul>
+      <div class="callout"><p>The platform must be built to production quality, comply with Polish and EU law (GDPR, Consumer Rights Act, AML), and integrate with Polish-market-specific data sources such as CEPiK, KRS, GUS, and Polish payment providers.</p></div>
+    </div>
+
+    <div class="spec-section" id="s2">
+      <div class="sec-num">Section 2</div>
+      <h1>Product Overview & Business Model</h1>
+      <h2>2.1 How the platform works</h2>
+      <p>The core flow is a reverse marketplace: sellers create listings, dealers compete, and sellers accept the best offer.</p>
+      <ul>
+        <li>Seller registers, submits vehicle details and documentation.</li>
+        <li>Platform validates the listing using automated and manual checks (CEPiK lookup, photo review, mileage cross-reference).</li>
+        <li>Approved listings enter the dealer auction pool for a fixed auction window (default 24 hours).</li>
+        <li>Registered dealers browse listings, review vehicle reports, and place sealed bids.</li>
+        <li>At auction close, the seller reviews all bids and accepts one.</li>
+        <li>The accepting dealer arranges vehicle collection. Payment is made directly between dealer and seller.</li>
+        <li>Platform invoices the dealer a success fee upon confirmed sale.</li>
+      </ul>
+      <h2>2.2 Revenue model</h2>
+      <ul>
+        <li>Free for sellers — zero cost, zero commission.</li>
+        <li>Dealers pay a monthly subscription to access auctions.</li>
+        <li>Dealers pay a per-vehicle success fee on completed purchases.</li>
+        <li>Optional premium listing features for sellers (sponsored placement, enhanced photos).</li>
+      </ul>
+      <h2>2.3 Target market</h2>
+      <p>Poland is the largest used-car market in Central and Eastern Europe, with approximately 2 million private vehicle transactions per year. The platform initially targets the top 20 Polish cities, with national rollout in phase 2. Primary seller demographic: 25–55-year-old private individuals. Primary dealer demographic: licensed Polish car dealers (komisanci and autoryzowane stacje dealerskie).</p>
+    </div>
+
+    <div class="spec-section" id="s3">
+      <div class="sec-num">Section 3</div>
+      <h1>Technical Architecture</h1>
+      <h2>3.1 Frontend</h2>
+      <ul>
+        <li><strong>Framework:</strong> Next.js 14+ (React, App Router, SSR/SSG for SEO-critical pages)</li>
+        <li><strong>Language:</strong> TypeScript throughout</li>
+        <li><strong>Styling:</strong> Tailwind CSS with a custom design system</li>
+        <li><strong>State:</strong> Zustand (global) + React Query (server state)</li>
+        <li><strong>Mobile:</strong> Responsive-first web. Native apps (React Native) in Phase 2.</li>
+        <li><strong>i18n:</strong> next-intl, Polish as primary locale</li>
+      </ul>
+      <h2>3.2 Backend</h2>
+      <ul>
+        <li><strong>Runtime:</strong> Node.js with NestJS (REST + WebSocket)</li>
+        <li><strong>Database:</strong> PostgreSQL (primary), Redis (caching, auction state, sessions)</li>
+        <li><strong>Storage:</strong> AWS S3 (vehicle photos, documents)</li>
+        <li><strong>Search:</strong> Elasticsearch or Meilisearch</li>
+        <li><strong>Queue:</strong> BullMQ on Redis (async jobs)</li>
+        <li><strong>Auth:</strong> JWT + refresh tokens. OAuth2 for social login.</li>
+      </ul>
+      <h2>3.3 Infrastructure</h2>
+      <ul>
+        <li><strong>Cloud:</strong> AWS or GCP — EU regions only (Warsaw/Frankfurt for GDPR)</li>
+        <li><strong>Containers:</strong> Docker + Kubernetes (EKS or GKE)</li>
+        <li><strong>CI/CD:</strong> GitHub Actions with automated tests and staged deployment</li>
+        <li><strong>Monitoring:</strong> Datadog or Grafana stack</li>
+        <li><strong>CDN:</strong> Cloudflare (static assets, DDoS protection)</li>
+      </ul>
+      <h2>3.4 Security requirements</h2>
+      <ul>
+        <li>All data in transit: TLS 1.3 minimum</li>
+        <li>All data at rest: AES-256 encryption</li>
+        <li>GDPR Article 25 — privacy by design and by default</li>
+        <li>OWASP Top 10 compliance; penetration testing before launch</li>
+        <li>Role-based access control (RBAC) for all authenticated routes</li>
+        <li>Rate limiting on all public-facing APIs</li>
+        <li>Audit logging for all admin actions and sensitive data access</li>
+        <li>PCI-DSS considerations — use hosted payment pages only</li>
+      </ul>
+    </div>
+
+    <div class="spec-section" id="s4">
+      <div class="sec-num">Section 4</div>
+      <h1>Public-Facing Website</h1>
+      <p>The public website is the primary acquisition channel for both sellers and dealers. It must be fast (LCP &lt; 2.5s, CLS &lt; 0.1), SEO-optimised, and convert visitors to registered users.</p>
+      <h2>4.1 Pages</h2>
+      <table class="spec-table">
+        <tr><th>Page</th><th>Requirements</th></tr>
+        <tr><td>Homepage</td><td>Hero with inline valuation form, value propositions, how it works, trust signals, dealer CTA, SEO structured data</td></tr>
+        <tr><td>How it works</td><td>Step-by-step seller and dealer journeys with visuals</td></tr>
+        <tr><td>Wycena</td><td>Multi-step valuation wizard (see 4.2)</td></tr>
+        <tr><td>Dla Dealerów</td><td>Dealer value proposition, pricing tiers, registration CTA, FAQ</td></tr>
+        <tr><td>Blog / Porady</td><td>SEO content hub, CMS-backed, categories: sprzedaż, wycena, prawo, rynek</td></tr>
+        <tr><td>O Nas</td><td>Company story, team, mission, media kit</td></tr>
+        <tr><td>Kontakt</td><td>Contact form, live chat widget (Intercom or Crisp)</td></tr>
+        <tr><td>Regulamin</td><td>Terms of service, seller T&Cs, dealer T&Cs, privacy policy, cookie policy</td></tr>
+        <tr><td>FAQ</td><td>Accordion FAQ with structured data for Google rich snippets</td></tr>
+      </table>
+      <h2>4.2 Valuation wizard</h2>
+      <ul>
+        <li><strong>Step 1:</strong> Reg plate input (Polish format validation). CEPiK/Infoekspert auto-lookup to pre-fill make, model, year.</li>
+        <li><strong>Step 2:</strong> Confirm vehicle details — mileage, fuel type, gearbox, drive type, colour.</li>
+        <li><strong>Step 3:</strong> Condition assessment — service history, owners, MOT validity, accident history, cosmetic rating (1–5).</li>
+        <li><strong>Step 4:</strong> Contact details — name, phone, email, postcode.</li>
+        <li><strong>Step 5:</strong> Valuation range result and confirmation email. Progress saved to localStorage.</li>
+      </ul>
+    </div>
+
+    <div class="spec-section" id="s5">
+      <div class="sec-num">Section 5</div>
+      <h1>Seller Account Portal</h1>
+      <p>The seller account is a private, authenticated space where the vehicle owner manages their listing from initial valuation through to sale. The UX must be simple, reassuring, and mobile-friendly.</p>
+      <h2>5.1 Authentication and onboarding</h2>
+      <ul>
+        <li>Email/password registration with email verification</li>
+        <li>OAuth2 login: Google, Apple, Facebook</li>
+        <li>Optional 2FA (TOTP)</li>
+        <li>3-screen onboarding carousel on first login</li>
+        <li>Profile completion progress indicator</li>
+      </ul>
+      <h2>5.2 Dashboard features</h2>
+      <table class="spec-table">
+        <tr><th>Feature</th><th>Detail</th></tr>
+        <tr><td>Listing status</td><td>Draft / In Review / Live / Offers Received / Sold / Withdrawn — visual progress bar</td></tr>
+        <tr><td>Auction countdown</td><td>Live countdown via WebSocket when auction is active</td></tr>
+        <tr><td>Bid summary</td><td>Number of bids received and highest bid amount after auction closes</td></tr>
+        <tr><td>Notifications</td><td>In-app bell — listing approved, new bid, closing warning, sale confirmed</td></tr>
+        <tr><td>Messages</td><td>Threaded support messaging. Post-sale: thread with winning dealer</td></tr>
+        <tr><td>Documents</td><td>Upload: dowód rejestracyjny, MOT, service book. Download: sale agreement template</td></tr>
+      </table>
+      <h2>5.3 Listing management</h2>
+      <ul>
+        <li>Edit listing while in Draft or In Review state</li>
+        <li>Photo upload — minimum 8 required, guided prompts, auto-compression, CDN, re-ordering</li>
+        <li>Video walkround — 60s max <span class="phase p2">P2</span></li>
+        <li>Withdraw listing — reason required, 2-withdrawal limit before account review</li>
+        <li>Relist — 7-day cooling-off period required</li>
+      </ul>
+      <h2>5.4 Offers review</h2>
+      <ul>
+        <li>All bids displayed as ranked cards (highest first). Dealer names anonymous until acceptance.</li>
+        <li>Each card shows: amount, dealer rating, location, estimated collection time</li>
+        <li>One-click accept with full confirmation modal</li>
+        <li>Decline all and relist option</li>
+        <li>Counter-offer feature <span class="phase p2">P2</span></li>
+        <li>Offer validity: 48 hours binding</li>
+      </ul>
+      <h2>5.5 Post-sale</h2>
+      <ul>
+        <li>Auto-generated umowa kupna-sprzedaży PDF (Polish legal template)</li>
+        <li>Collection scheduling calendar widget</li>
+        <li>Seller marks handover to confirm sale complete</li>
+        <li>Star rating and platform review</li>
+        <li>PCC-3 tax information modal (informational only, not legal advice)</li>
+      </ul>
+    </div>
+
+    <div class="spec-section" id="s6">
+      <div class="sec-num">Section 6</div>
+      <h1>Dealer Account Portal</h1>
+      <p>The dealer portal is a professional B2B tool used daily. It must prioritise speed, information density, and efficiency. Dealers may manage multiple bids simultaneously across many listings.</p>
+      <h2>6.1 Verification onboarding</h2>
+      <ul>
+        <li>NIP + REGON input with GUS BIR API auto-lookup</li>
+        <li>KRS number with automated company status and PKD code fetch</li>
+        <li>Document upload: business licence, premises photo, director identity document</li>
+        <li>Manual ops review — 48-hour SLA target</li>
+        <li>Annual KRS re-verification (automated)</li>
+        <li>Subscription selection and payment activation before auction access</li>
+      </ul>
+      <h2>6.2 Dashboard features</h2>
+      <table class="spec-table">
+        <tr><th>Feature</th><th>Detail</th></tr>
+        <tr><td>Active auctions feed</td><td>Live feed matching saved search preferences. Sortable by time remaining, make, location, value. Filterable by all attributes.</td></tr>
+        <tr><td>My bids</td><td>Status: auction live / winning / outbid / won / lost. One-click re-bid if outbid.</td></tr>
+        <tr><td>Won vehicles</td><td>Pending collection / scheduled / complete. CTA to contact seller.</td></tr>
+        <tr><td>Saved searches</td><td>Up to 10, with email or push alerts on matching new listings</td></tr>
+        <tr><td>Watchlist</td><td>Notified when watched listing updates or auction starts</td></tr>
+        <tr><td>Performance stats</td><td>Win rate, avg winning bid vs market, total acquired. CSV export.</td></tr>
+        <tr><td>Billing</td><td>Subscription plan, renewal date, invoice history (PDF), payment method management</td></tr>
+      </table>
+      <h2>6.3 Listing detail (dealer view)</h2>
+      <ul>
+        <li>Full photo gallery with zoom and lightbox</li>
+        <li>Complete specification: VIN, paint code, engine power (kW/KM), all drivetrain details</li>
+        <li>CEPiK history: first registration, inspection dates, mileage checks, theft register</li>
+        <li>AutoDNA or Infoekspert third-party report</li>
+        <li>Estimated market value range based on Otomoto comparable listings</li>
+        <li>Seller location and distance from dealer (approximate)</li>
+        <li>Auction status: time remaining, bid count (not amounts), own bid status</li>
+        <li>Bid entry widget with two-step confirmation</li>
+      </ul>
+    </div>
+
+    <div class="spec-section" id="s7">
+      <div class="sec-num">Section 7</div>
+      <h1>Dealer Auction Engine</h1>
+      <div class="callout"><p><strong>Critical system:</strong> The auction engine must be reliable, fair, tamper-resistant, and capable of handling 500+ concurrent auctions. Zero bid loss tolerance.</p></div>
+      <h2>7.1 Auction mechanics</h2>
+      <ul>
+        <li><strong>Type:</strong> Sealed-bid first-price — dealers see bid count but not amounts</li>
+        <li><strong>Window:</strong> Configurable per-listing — 12h, 24h, or 48h. Default 24h.</li>
+        <li><strong>Start time:</strong> Fixed daily batch at 09:00 CET for consistent dealer patterns</li>
+        <li><strong>Reserve price:</strong> Optional, set by seller or admin, never shown to dealers</li>
+        <li><strong>Minimum bid increment:</strong> 500 PLN</li>
+        <li><strong>Revision:</strong> Upward only, max 3 revisions per dealer per listing</li>
+        <li><strong>Sniping prevention:</strong> Late bid in final 5 min extends auction by 5 min. Max total extension: 30 min.</li>
+        <li><strong>Zero bids:</strong> Seller can extend by 24h once, relist, or withdraw</li>
+      </ul>
+      <h2>7.2 Bid integrity and security</h2>
+      <ul>
+        <li>All bids cryptographically signed with server-side timestamp — cannot be altered post-submission</li>
+        <li>Session verified server-side on every bid action</li>
+        <li>Rate limiting: 10 bid actions per minute per dealer</li>
+        <li>Immutable audit trail: timestamp, dealer ID, listing ID, amount, IP address</li>
+        <li>Fraud detection: anomaly alerts for unusual bidding patterns</li>
+        <li>Mid-auction dealer suspension by ops (non-disruptive to other bids)</li>
+        <li>Idempotent bid submission API</li>
+      </ul>
+      <h2>7.3 Real-time UI <span class="phase p2">P2</span></h2>
+      <ul>
+        <li>WebSocket live updates: countdown, bid count, own bid status</li>
+        <li>Graceful fallback to 30-second polling</li>
+        <li>Two-step bid confirmation — review screen then confirm button</li>
+        <li>Outbid push notification and in-app alert</li>
+        <li>1-hour closing alert via push and SMS</li>
+        <li>Full bidding functionality on mobile browser</li>
+      </ul>
+      <h2>7.4 Post-auction states</h2>
+      <table class="spec-table">
+        <tr><th>State</th><th>Description</th></tr>
+        <tr><td>Auction closed</td><td>Bids locked. Seller notified with summary. 48-hour acceptance window opens.</td></tr>
+        <tr><td>Offer accepted</td><td>Winner gets full seller contact details. Losing dealers notified automatically.</td></tr>
+        <tr><td>Collection scheduled</td><td>Date/time confirmed in platform. Both parties receive .ics calendar invite.</td></tr>
+        <tr><td>Sale complete</td><td>Seller confirms handover. Dealer invoiced success fee. Listing archived.</td></tr>
+        <tr><td>Offer expired</td><td>No response within 48h. All bids expire. Seller prompted to relist.</td></tr>
+        <tr><td>Dispute raised</td><td>Listing flagged. Ops team mediates. 5 business day resolution SLA.</td></tr>
+      </table>
+    </div>
+
+    <div class="spec-section" id="s8">
+      <div class="sec-num">Section 8</div>
+      <h1>Internal Backoffice</h1>
+      <p>Used exclusively by ZjazdTutaj employees. Full audit trail on all actions. Role-based access control.</p>
+      <h2>8.1 Admin roles</h2>
+      <ul>
+        <li><strong>Super Admin:</strong> Full access including deletion, financial data, system config</li>
+        <li><strong>Operations Manager:</strong> Listing approval, dealer verification, disputes, reports</li>
+        <li><strong>Customer Support:</strong> Read access, messaging, limited listing edits</li>
+        <li><strong>Finance:</strong> Payouts, invoicing, subscriptions, financial reports</li>
+        <li><strong>Marketing:</strong> CMS, blog, promotional tools. No access to personal data.</li>
+      </ul>
+      <h2>8.2 Modules</h2>
+      <table class="spec-table">
+        <tr><th>Module</th><th>Features</th></tr>
+        <tr><td>Dashboard</td><td>Live KPIs, activity feed, alerts for flagged listings, failed payouts, pending verifications</td></tr>
+        <tr><td>Listings</td><td>Full CRUD, bulk approve/reject/flag, filter, manual valuation override, internal notes</td></tr>
+        <tr><td>Dealers</td><td>Directory with KRS/NIP status, approve/reject/suspend, full bid history, subscription management</td></tr>
+        <tr><td>Sellers</td><td>Directory, listing history, account suspension, GDPR data export and erasure, password reset</td></tr>
+        <tr><td>Auction control</td><td>Real-time monitor, extend/cancel/force-close, view all bid amounts, dealer blacklist per listing</td></tr>
+        <tr><td>Disputes</td><td>Queue with SLA timer, agent assignment, internal notes, outcome and compensation log</td></tr>
+        <tr><td>Finance</td><td>Auto-invoicing, failed payment management, revenue reports (day/week/month), CSV export</td></tr>
+        <tr><td>Analytics</td><td>Auction fill rate, dealer league table, geographic heat map, seller funnel conversion</td></tr>
+        <tr><td>CMS</td><td>Blog, FAQ, homepage banners, legal document versioning with effective dates</td></tr>
+        <tr><td>System config</td><td>Auction defaults, bid increment, email templates, feature flags, API key management</td></tr>
+      </table>
+    </div>
+
+    <div class="spec-section" id="s9">
+      <div class="sec-num">Section 9</div>
+      <h1>Notifications & Communications</h1>
+      <h2>9.1 Channels</h2>
+      <ul>
+        <li><strong>Email:</strong> SendGrid or Amazon SES. Polish language, branded HTML templates, GDPR-compliant unsubscribe.</li>
+        <li><strong>SMS:</strong> SMSAPI.pl (preferred for Polish numbers). Twilio as fallback.</li>
+        <li><strong>Push:</strong> Web Push API (browser). Firebase Cloud Messaging for mobile (Phase 2).</li>
+        <li><strong>In-app:</strong> Notification bell, unread count badge, mark as read, clear all.</li>
+      </ul>
+      <h2>9.2 Trigger matrix</h2>
+      <table class="spec-table">
+        <tr><th>Trigger</th><th>Channels and recipient</th></tr>
+        <tr><td>Listing submitted</td><td>Email → seller (confirmation + next steps)</td></tr>
+        <tr><td>Listing approved</td><td>Email + SMS → seller. Email → matching subscribed dealers.</td></tr>
+        <tr><td>Listing rejected</td><td>Email → seller (with reason and resubmission guidance)</td></tr>
+        <tr><td>Auction started</td><td>Push + Email → dealer watchlist. Email → seller.</td></tr>
+        <tr><td>Bid placed</td><td>In-app → dealer (confirmation only, no email per bid)</td></tr>
+        <tr><td>Outbid</td><td>Push + in-app → dealer</td></tr>
+        <tr><td>Auction closing (1h)</td><td>Push + SMS → active bidding dealers. Email → seller.</td></tr>
+        <tr><td>Auction closed</td><td>Email + SMS → seller. Email → all bidding dealers.</td></tr>
+        <tr><td>Offer accepted</td><td>Email + SMS → winning dealer (full seller details). Email → losing dealers.</td></tr>
+        <tr><td>Collection confirmed</td><td>Email + .ics calendar invite → both seller and dealer</td></tr>
+        <tr><td>Sale complete</td><td>Email → seller (sale agreement PDF). Email → dealer (invoice PDF).</td></tr>
+        <tr><td>Payment failed</td><td>Email + in-app → dealer. Alert → finance team.</td></tr>
+        <tr><td>Dealer verified/rejected</td><td>Email → dealer contact</td></tr>
+      </table>
+    </div>
+
+    <div class="spec-section" id="s10">
+      <div class="sec-num">Section 10</div>
+      <h1>Third-Party APIs & Integrations</h1>
+      <h2>10.1 Vehicle data and history</h2>
+      <table class="spec-table">
+        <tr><th>API</th><th>Provider</th><th>Purpose</th></tr>
+        <tr><td>CEPiK API</td><td>Ministerstwo Cyfryzacji</td><td>Official Polish vehicle registry. VIN and plate lookup: inspection history, mileage, first registration. Free, requires formal approval.</td></tr>
+        <tr><td>Infoekspert / InfoVIN</td><td>Infoekspert Sp. z o.o.</td><td>Commercial vehicle history: theft register, finance checks, import history, accident records.</td></tr>
+        <tr><td>AutoDNA</td><td>AutoDNA (Polish)</td><td>History report aggregator: CEPiK, insurance claims, odometer fraud detection. Trusted brand in Poland.</td></tr>
+        <tr><td>Eurotax / DAT</td><td>Eurotax Glass / DAT</td><td>Residual value data and vehicle specification database for baseline valuation.</td></tr>
+        <tr><td>VIN Decoder API</td><td>vindecoder.eu</td><td>Full spec decode from VIN — used to pre-fill listing fields.</td></tr>
+      </table>
+      <h2>10.2 Market valuation</h2>
+      <table class="spec-table">
+        <tr><th>API</th><th>Provider</th><th>Purpose</th></tr>
+        <tr><td>Otomoto API</td><td>OLX Group</td><td>Comparable listings from Poland's largest car marketplace. Market value ranges. Official API requires partnership; compliant scraping as alternative.</td></tr>
+        <tr><td>AutoScout24 API</td><td>AutoScout24 GmbH</td><td>European used-car listing data for cross-border comparisons.</td></tr>
+        <tr><td>Mobile.de</td><td>Scout24</td><td>German market data for cross-border vehicles.</td></tr>
+      </table>
+      <h2>10.3 Business and identity verification</h2>
+      <table class="spec-table">
+        <tr><th>API</th><th>Provider</th><th>Purpose</th></tr>
+        <tr><td>GUS BIR API</td><td>Główny Urząd Statystyczny</td><td>NIP and REGON lookup: company name, address, status, PKD codes. Free with registration.</td></tr>
+        <tr><td>KRS API</td><td>Ministerstwo Sprawiedliwości</td><td>National Court Register: legal status, directors. Free via e-KRS API.</td></tr>
+        <tr><td>Stripe Identity / Onfido</td><td>Stripe / Onfido</td><td>KYC document verification for AML compliance. Photo ID + liveness check.</td></tr>
+      </table>
+      <h2>10.4 Payments</h2>
+      <table class="spec-table">
+        <tr><th>API</th><th>Provider</th><th>Purpose</th></tr>
+        <tr><td>Przelewy24</td><td>PayPro S.A. (Poznań)</td><td>Poland's most-used payment gateway. BLIK, bank transfer, card. Essential for Polish market.</td></tr>
+        <tr><td>Stripe</td><td>Stripe Inc.</td><td>Dealer subscription billing (recurring), success fee invoicing. PLN supported.</td></tr>
+        <tr><td>Tpay</td><td>KIP S.A.</td><td>Alternative Polish payment provider. BLIK, bank transfer. Use as P24 backup.</td></tr>
+      </table>
+      <h2>10.5 Communications</h2>
+      <table class="spec-table">
+        <tr><th>API</th><th>Provider</th><th>Purpose</th></tr>
+        <tr><td>SMSAPI.pl</td><td>SMSAPI (Katowice)</td><td>Polish SMS. High deliverability, PLN billing, official sender ID. Preferred over Twilio.</td></tr>
+        <tr><td>SendGrid</td><td>Twilio SendGrid</td><td>Transactional email with template management and GDPR-compliant list management.</td></tr>
+        <tr><td>Intercom / Crisp</td><td>Intercom / Crisp</td><td>Live chat support widget. Intercom for B2B dealer segment; Crisp for early-stage cost savings.</td></tr>
+      </table>
+      <h2>10.6 Mapping, media, and analytics</h2>
+      <table class="spec-table">
+        <tr><th>API</th><th>Provider</th><th>Purpose</th></tr>
+        <tr><td>Google Maps Platform</td><td>Google LLC</td><td>Geocoding, distance calculation, map display on listing pages.</td></tr>
+        <tr><td>AWS S3 / CloudFront</td><td>Amazon Web Services</td><td>Photo and document storage with CDN. EU regions for GDPR.</td></tr>
+        <tr><td>Cloudinary</td><td>Cloudinary Ltd.</td><td>Image optimisation, WebP/AVIF conversion, auto-cropping, responsive sizes.</td></tr>
+        <tr><td>Contentful / Sanity</td><td>Contentful / Sanity</td><td>Headless CMS for blog, FAQ, and marketing pages.</td></tr>
+        <tr><td>Sentry</td><td>Sentry Inc.</td><td>Frontend and backend error tracking. Essential for production quality.</td></tr>
+        <tr><td>Datadog</td><td>Datadog Inc.</td><td>Infrastructure monitoring, APM, log aggregation, auction engine health dashboards.</td></tr>
+        <tr><td>Mixpanel</td><td>Mixpanel Inc.</td><td>Product analytics: user flows, feature adoption, retention, A/B test results.</td></tr>
+      </table>
+    </div>
+
+    <div class="spec-section" id="s11">
+      <div class="sec-num">Section 11</div>
+      <h1>Legal & Compliance</h1>
+      <div class="callout"><p><strong>Mandatory:</strong> Legal review by a qualified Polish legal firm is required before launch. This document does not constitute legal advice.</p></div>
+      <h2>11.1 GDPR / RODO</h2>
+      <ul>
+        <li>Privacy policy in Polish, approved by legal counsel, with lawful basis for each processing activity</li>
+        <li>Cookie consent banner — granular consent, no pre-ticked boxes, compliant with UODO guidelines</li>
+        <li>Data subject rights: access (export), rectification, erasure, portability, objection — all automated or semi-automated in backoffice</li>
+        <li>Data retention: seller PII deleted or anonymised 2 years after last activity</li>
+        <li>DPA with all third-party processors (Stripe, SendGrid, Google, etc.)</li>
+        <li>Data breach procedure: 72-hour notification to UODO. Internal incident response plan required.</li>
+        <li>Assess DPO requirement under GDPR Article 37</li>
+      </ul>
+      <h2>11.2 Polish commercial law</h2>
+      <ul>
+        <li><strong>Ustawa o prawach konsumenta:</strong> Applicable to seller-to-dealer transactions. Dealer always professional; seller may be consumer.</li>
+        <li><strong>Ustawa o świadczeniu usług drogą elektroniczną:</strong> Electronic Services Act. Mandatory information disclosures in T&Cs.</li>
+        <li><strong>PCC-3 tax:</strong> 2% civil law transaction tax on vehicle sales. Platform must inform sellers (informational only).</li>
+        <li><strong>VAT:</strong> Invoice generation must support VAT invoices (faktura VAT) for dealer purchases.</li>
+        <li><strong>AML (Ustawa AML):</strong> If escrow or payment facilitation is introduced, full AML compliance required. Legal review mandatory.</li>
+      </ul>
+      <h2>11.3 Sale agreement</h2>
+      <ul>
+        <li>Auto-generated PDF in Polish — legal template approved by counsel</li>
+        <li>Must contain: full party details, vehicle description (VIN, reg, make, model, year, mileage), agreed price in PLN, payment terms, seller's statement of right to sell, signature fields</li>
+        <li>Clear disclaimer: platform provides template as convenience only — not a legal service</li>
+      </ul>
+    </div>
+
+    <div class="spec-section" id="s12">
+      <div class="sec-num">Section 12</div>
+      <h1>Delivery Phases & Timeline</h1>
+      <table class="spec-table">
+        <tr><th>Phase</th><th>Timeline</th><th>Deliverables</th></tr>
+        <tr><td>Phase 0</td><td>Weeks 1–4</td><td>Discovery, architecture design, design system, API sandbox setup, team onboarding. Output: architecture doc, wireframes, API integration plan.</td></tr>
+        <tr><td>Phase 1</td><td>Weeks 5–16</td><td>Core platform: auth, seller registration + valuation, listing + photo upload, dealer registration + verification, listing review backoffice, CEPiK + GUS APIs, email notifications, basic auction engine, Stripe + P24 payments.</td></tr>
+        <tr><td>Phase 2</td><td>Weeks 17–24</td><td>Full auction engine: WebSocket UI, sniping prevention, bid revision, outbid alerts, seller offer review, post-sale workflow, sale agreement PDF, SMS, dealer performance stats, AutoDNA integration.</td></tr>
+        <tr><td>Phase 3</td><td>Weeks 25–30</td><td>SEO optimisation, blog/CMS, live chat, A/B testing, Hotjar/Clarity, dispute management, GDPR rights workflows, penetration testing, load testing, staging sign-off.</td></tr>
+        <tr><td>Phase 4</td><td>Weeks 31–34</td><td>Soft launch to pilot dealers (closed beta), feedback iteration, bug fixes, performance tuning, staff training, documentation handover, production go-live.</td></tr>
+        <tr><td>Phase 5</td><td>Post-launch</td><td>React Native mobile apps (iOS + Android), counter-offer feature, dealer API, expanded valuation data, advanced fraud detection ML, dealer marketplace.</td></tr>
+      </table>
+      <h2>12.1 Recommended team</h2>
+      <ul>
+        <li>1× Technical Lead / Solution Architect</li>
+        <li>2–3× Senior Full-Stack Engineers (Next.js + NestJS)</li>
+        <li>1× Backend Engineer (auction engine, real-time systems)</li>
+        <li>1× DevOps / Infrastructure Engineer</li>
+        <li>1× UI/UX Designer (Polish-market consumer experience)</li>
+        <li>1× QA Engineer</li>
+        <li>0.5× Project Manager / Scrum Master</li>
+        <li>0.5× Security Engineer (penetration testing, compliance review)</li>
+      </ul>
+    </div>
+
+    <div class="spec-section" id="s13">
+      <div class="sec-num">Section 13</div>
+      <h1>Non-Functional Requirements</h1>
+      <table class="spec-table">
+        <tr><th>Requirement</th><th>Target</th></tr>
+        <tr><td>Availability</td><td>99.9% uptime SLA. Maintenance windows: Sunday 02:00–04:00 CET only.</td></tr>
+        <tr><td>Performance</td><td>LCP &lt; 2.5s on 4G mobile. API p95 &lt; 300ms. Bid submission p99 &lt; 500ms.</td></tr>
+        <tr><td>Scalability</td><td>10,000 concurrent users at launch. Horizontal scaling to 100,000 without re-architecture.</td></tr>
+        <tr><td>Concurrent auctions</td><td>Minimum 500 simultaneous live auctions without degradation.</td></tr>
+        <tr><td>Data integrity</td><td>Zero bid loss tolerance. All bids persisted before HTTP response returned. Idempotent API.</td></tr>
+        <tr><td>Browser support</td><td>Last 2 versions: Chrome, Firefox, Safari, Edge. Mobile Safari (iOS 15+), Chrome Android.</td></tr>
+        <tr><td>Accessibility</td><td>WCAG 2.1 AA compliance. Screen-reader tested (NVDA + JAWS). Keyboard-navigable critical flows.</td></tr>
+        <tr><td>Localisation</td><td>Polish primary. Date: DD.MM.YYYY. Currency: PLN with comma decimal. Phone: +48 XXX XXX XXX.</td></tr>
+        <tr><td>Backup and recovery</td><td>Daily automated backups. Point-in-time recovery to 5 min. RTO &lt; 4h. RPO &lt; 1h.</td></tr>
+      </table>
+    </div>
+
+    <div class="spec-section" id="s14">
+      <div class="sec-num">Section 14</div>
+      <h1>Glossary</h1>
+      <table class="spec-table">
+        <tr><th>Term</th><th>Definition</th></tr>
+        <tr><td>CEPiK</td><td>Centralna Ewidencja Pojazdów i Kierowców — Polish national vehicle and driver registry.</td></tr>
+        <tr><td>KRS</td><td>Krajowy Rejestr Sądowy — National Court Register. Official register of Polish companies.</td></tr>
+        <tr><td>NIP</td><td>Numer Identyfikacji Podatkowej — Polish Tax Identification Number.</td></tr>
+        <tr><td>REGON</td><td>Rejestr Podmiotów Gospodarki Narodowej — statistical identification number from GUS.</td></tr>
+        <tr><td>GUS BIR</td><td>Główny Urząd Statystyczny — official source for NIP/REGON business lookups.</td></tr>
+        <tr><td>BLIK</td><td>Polish mobile payment system. 85%+ mobile payment share. Requires a bank app.</td></tr>
+        <tr><td>PCC-3</td><td>Podatek od czynności cywilnoprawnych — 2% civil law transaction tax on vehicle sales.</td></tr>
+        <tr><td>RODO</td><td>Polish name for the EU GDPR regulation.</td></tr>
+        <tr><td>UODO</td><td>Urząd Ochrony Danych Osobowych — Poland's data protection supervisory authority.</td></tr>
+        <tr><td>Dowód rejestracyjny</td><td>Vehicle registration certificate — Polish equivalent of the V5C logbook.</td></tr>
+        <tr><td>Przegląd techniczny</td><td>Mandatory vehicle technical inspection — Polish MOT equivalent.</td></tr>
+        <tr><td>Komisant</td><td>Licensed used-car dealer operating a commission sales model (komis samochodowy).</td></tr>
+        <tr><td>Umowa kupna-sprzedaży</td><td>Purchase and sale agreement — legally required document for vehicle transfer in Poland.</td></tr>
+        <tr><td>Sealed-bid auction</td><td>Auction format where bids are submitted privately; amounts not visible to competitors.</td></tr>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <p>© 2025 ZjazdTutaj.pl Sp. z o.o. · Technical Specification v1.0 · June 2025 · Confidential — for development partner use only</p>
+</footer>
+
+<script>
+const links = document.querySelectorAll('.toc a');
+const sections = document.querySelectorAll('.spec-section');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const match = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (match) match.classList.add('active');
+    }
+  });
+}, { rootMargin: '-60px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
